@@ -5,7 +5,7 @@
 using namespace std;
 
 int main()
-{    
+{
     Jamn::Valerie<double> v;
 
     v.pushBack(1.1);
@@ -64,5 +64,8 @@ int main()
         std::cout << v3.pushOut(i) << std::endl;
     }
     
+    v3.clear();
+    std::cout << v3.retSize() << std::endl;
+
     return 0;
 }

@@ -152,8 +152,27 @@ template <typename type>
 template <typename type>
     Jamn::Valerie<type> Jamn::Valerie<type>::operator=(Valerie const& v)
     {
-        if (this == &v)
+        if(this->size == v.size)
         {
+            for(int i = 0; i < this->size; i++)
+            {
+                if(this->vector[i] != v.vector[i])
+                {
+                    delete[] this->vector;
+                    this->size = v.size;
+                    this->vector = new type[this->size];
+                    for (int i = 0; i < this->size - 1; i++)
+                    {
+                        this->vector[i] = v.vector[i];
+                    }
+                    return *this;
+                }
+                else
+                {
+                    continue;
+                }
+            }
+
             return *this;
         }
         else
@@ -175,7 +194,7 @@ template <typename type>
         delete[] this->vector;
         this->size = list.size() + 1;
         this->vector = new type[this->size];
-        for (int i = 0; i < this->size - 1; i++)
+        for (int i = 0; i < list.size(); i++)
         {
             this->vector[i] = (type)list.begin()[i];
         }
