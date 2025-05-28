@@ -1,5 +1,5 @@
 #include <iostream>
-#include "Vector.hpp"
+#include "Valerie.hpp"
 
 template <typename type>
     Jamn::Valerie<type>::Valerie()
