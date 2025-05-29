@@ -189,7 +189,7 @@ template <typename type>
     }
 
 template <typename type>
-    Jamn::Valerie<type> Jamn::Valerie<type>::operator=(std::initializer_list<type> const& list)
+    Jamn::Valerie<type> Jamn::Valerie<type>::operator=(std::initializer_list<type> list)
     {
         delete[] this->vector;
         this->size = list.size() + 1;
