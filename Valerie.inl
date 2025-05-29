@@ -154,7 +154,7 @@ template <typename type>
     {
         if(this->size == v.size)
         {
-            for(int i = 0; i < this->size; i++)
+            for(int i = 0; i < this->size - 1; i++)
             {
                 if(this->vector[i] != v.vector[i])
                 {
@@ -189,7 +189,7 @@ template <typename type>
     }
 
 template <typename type>
-    Jamn::Valerie<type> Jamn::Valerie<type>::operator=(std::initializer_list<type> list)
+    Jamn::Valerie<type> Jamn::Valerie<type>::operator=(std::initializer_list<type> const& list)
     {
         delete[] this->vector;
         this->size = list.size() + 1;

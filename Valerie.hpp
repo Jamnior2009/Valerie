@@ -35,7 +35,7 @@ namespace Jamn
 
         Valerie operator=(Valerie const& v);
 
-        Valerie operator=(std::initializer_list<type> list);
+        Valerie operator=(std::initializer_list<type> const& list);
 
         ~Valerie();
     };
