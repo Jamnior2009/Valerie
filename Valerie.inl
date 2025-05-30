@@ -127,7 +127,7 @@ template <typename type>
     }
 
 template <typename type>
-    Jamn::Valerie<type> Jamn::Valerie<type>::operator+(Valerie const& v)
+    Jamn::Valerie<type>& Jamn::Valerie<type>::operator+(Valerie const& v)
     {
         type* temp = new type[this->size + v.size - 1];
         for (int i = 0; i < this->size - 1; i++)
@@ -150,7 +150,7 @@ template <typename type>
     }
     
 template <typename type>
-    Jamn::Valerie<type> Jamn::Valerie<type>::operator=(Valerie const& v)
+    Jamn::Valerie<type>& Jamn::Valerie<type>::operator=(Valerie const& v)
     {
         if(this->size == v.size)
         {
@@ -189,7 +189,7 @@ template <typename type>
     }
 
 template <typename type>
-    Jamn::Valerie<type> Jamn::Valerie<type>::operator=(std::initializer_list<type> list)
+    Jamn::Valerie<type>& Jamn::Valerie<type>::operator=(std::initializer_list<type> list)
     {
         delete[] this->vector;
         this->size = list.size() + 1;

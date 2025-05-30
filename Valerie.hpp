@@ -31,11 +31,11 @@ namespace Jamn
 
         void clear();
 
-        Valerie operator+(Valerie const& v);
+        Valerie& operator+(Valerie const& v);
 
-        Valerie operator=(Valerie const& v);
+        Valerie& operator=(Valerie const& v);
 
-        Valerie operator=(std::initializer_list<type> list);
+        Valerie& operator=(std::initializer_list<type> list);
 
         ~Valerie();
     };
