@@ -1,98 +1,105 @@
-#include <iostream>
-#include "Valerie.hpp"
-
 template <typename type>
     Jamn::Valerie<type>::Valerie()
     {
-        this->size = 1;
-        this->vector = new type[size];
+        size = 0;
+        vector = nullptr;
     }
 
 template <typename type>
     size_t Jamn::Valerie<type>::retSize() const
     {
-        return this->size - 1;
+        return size;
     }
 
 template <typename type>
     void Jamn::Valerie<type>::pushBack(type value)
     {
-        type* temp = new type[this->size + 1];
-        for (int i = 0; i < this->size; i++)
+        if (size == 0)
         {
-            temp[i] = this->vector[i];
-        }
-        delete[] this->vector;
-        temp[this->size - 1] = value;
-        this->size++;
-        this->vector = new type[size];
-        for (int i = 0; i < this->size; i++)
-        {
-            this->vector[i] = temp[i];
-        }
-        delete[] temp;
-    }
-    
-template <typename type>
-    type Jamn::Valerie<type>::pushOut(size_t index) const
-    {
-        if (index < this->size)
-        {
-            return this->vector[index];
+            size++;
+            vector = new type[size];
+            vector[0] = value;
         }
         else
         {
-            throw;
-            return -1.0;
+            type* temp = new type[size];
+            for (int i = 0; i < size; i++)
+            {
+                temp[i] = vector[i];
+            }
+            delete[] vector;
+            size++;
+            vector = new type[size];
+            for (int i = 0; i < size - 1; i++)
+            {
+                vector[i] = temp[i];
+            }
+            delete[] temp;
+            vector[size - 1] = value;
         }
     }
-    
+
+template <typename type>
+    type Jamn::Valerie<type>::pushOut(size_t index) const
+    {
+        if (index < size && size > 0)
+        {
+            return vector[index];
+        }
+        else
+        {
+            throw std::out_of_range("Wrong index | out of range");
+        }
+    }
+
 template <typename type>
     void Jamn::Valerie<type>::del(size_t index)
     {
-        if (index < this->size)
+        if (index < size && size > 0)
         {
-            type* temp = new type[this->size - 1];
-            for (int i = 0; i < this->size - 1; i++)
+            size--;
+
+            type* temp = new type[size];
+            for (int i = 0; i < size + 1; i++)
             {
                 if (i < index)
                 {
-                    temp[i] = this->vector[i];
+                    temp[i] = vector[i];
                 }
                 else if (i == index) {}
                 else if (i > index)
                 {
-                    temp[i - 1] = this->vector[i];
+                    temp[i - 1] = vector[i];
                 }
             }
-            delete[] this->vector;
-            this->size--;
-            this->vector = new type[this->size];
-            for (int i = 0; i < this->size; i++)
+            delete[] vector;
+            vector = new type[size];
+            for (int i = 0; i < size; i++)
             {
-                this->vector[i] = temp[i];
+                vector[i] = temp[i];
             }
+
             delete[] temp;
         }
         else
         {
-            throw;
+            throw std::out_of_range("Wrong index | out of range");
         }
     }
-    
+
 template <typename type>
     void Jamn::Valerie<type>::sort()
     {
-        for (int i = 0; i < this->size - 2; i++)
+        for (int i = 0; i < size - 2; i++)
         {
             bool end = false;
-            for (int j = 0; j < this->size - 2 - i; j++)
+            for (int j = 0; j < size - 2 - i; j++)
             {
-                if (this->vector[j] > this->vector[j + 1])
+                if (vector[j] > vector[j + 1])
                 {
-                    type temp = this->vector[j];
-                    this->vector[j] = this->vector[j + 1];
-                    this->vector[j + 1] = temp;
+                    type temp = vector[j];
+                    vector[j] = vector[j + 1];
+                    vector[j + 1] = temp;
 
                     end = true;
                 }
@@ -101,69 +108,69 @@ template <typename type>
             if (!end)
             {
                 break;
-            }            
+            }
         }
     }
 
 template <typename type>
     void Jamn::Valerie<type>::replace(size_t index, type value)
     {
-        if (index < this->size)
+        if (index < size && size > 0)
         {
-            this->vector[index] = (type)value;
+            vector[index] = (type)value;
         }
         else
         {
-            throw;
+            throw std::out_of_range("Wrong index | out of range");
         }
     }
 
 template <typename type>
     void Jamn::Valerie<type>::clear()
     {
-        delete[] this->vector;
-        this->size = 1;
-        this->vector = new type[this->size];
+        delete[] vector;
+        size = 0;
+        vector = nullptr;
     }
 
 template <typename type>
     Jamn::Valerie<type>& Jamn::Valerie<type>::operator+(Valerie const& v)
     {
-        type* temp = new type[this->size + v.size - 1];
-        for (int i = 0; i < this->size - 1; i++)
+        type* temp = new type[size + v.size];
+        for (int i = 0; i < size; i++)
         {
-            temp[i] = this->vector[i];
+            temp[i] = vector[i];
         }
-        delete[] this->vector;
-        for (int i = 0; i < v.size - 1; i++)
+        delete[] vector;
+        for (int i = 0; i < v.size; i++)
         {
-            temp[this->size + i - 1] = v.vector[i];
+            temp[size + i] = v.vector[i];
         }
-        this->size = this->size + v.size - 1;
-        this->vector = new type[this->size];
-        for (int i = 0; i < this->size - 1; i++)
+        size = size + v.size;
+        vector = new type[size];
+        for (int i = 0; i < size; i++)
         {
-            this->vector[i] = temp[i];
+            vector[i] = temp[i];
         }
         delete[] temp;
         return *this;
     }
-    
+
 template <typename type>
     Jamn::Valerie<type>& Jamn::Valerie<type>::operator=(Valerie const& v)
     {
-        if(this->size == v.size)
+        if (size == v.size)
         {
-            for(int i = 0; i < this->size - 1; i++)
+            for (int i = 0; i < size; i++)
             {
-                if(this->vector[i] != v.vector[i])
+                if (vector[i] != v.vector[i])
                 {
-                    delete[] this->vector;
-                    this->size = v.size;
-                    this->vector = new type[this->size];
-                    for (int i = 0; i < this->size - 1; i++)
+                    delete[] vector;
+                    size = v.size;
+                    vector = new type[size];
+                    for (int i = 0; i < size; i++)
                     {
-                        this->vector[i] = v.vector[i];
+                        vector[i] = v.vector[i];
                     }
                     return *this;
                 }
@@ -177,12 +184,12 @@ template <typename type>
         }
         else
         {
-            delete[] this->vector;
-            this->size = v.size;
-            this->vector = new type[this->size];
-            for (int i = 0; i < this->size - 1; i++)
+            delete[] vector;
+            size = v.size;
+            vector = new type[size];
+            for (int i = 0; i < size; i++)
             {
-                this->vector[i] = v.vector[i];
+                vector[i] = v.vector[i];
             }
             return *this;
         }
@@ -192,7 +199,7 @@ template <typename type>
     Jamn::Valerie<type>& Jamn::Valerie<type>::operator=(std::initializer_list<type> list)
     {
         delete[] this->vector;
-        this->size = list.size() + 1;
+        this->size = list.size();
         this->vector = new type[this->size];
         for (int i = 0; i < list.size(); i++)
         {
@@ -200,9 +207,9 @@ template <typename type>
         }
         return *this;
     }
-    
+
 template <typename type>
     Jamn::Valerie<type>::~Valerie()
     {
-        delete[] this->vector;
+        delete[] vector;
     }
