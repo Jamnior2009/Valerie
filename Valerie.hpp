@@ -9,12 +9,11 @@ namespace Jamn
 
     class Valerie
     {
-    public:
-
+    private:
         size_t size;
         type* vector;
-        //type* temp;
 
+    public:
         Valerie();
 
         size_t retSize() const;
