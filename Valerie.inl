@@ -1,3 +1,6 @@
+#include <cstddef>
+#include <initializer_list>
+
 template <typename type>
     Jamn::Valerie<type>::Valerie()
     {
