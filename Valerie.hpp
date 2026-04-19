@@ -10,23 +10,34 @@ namespace Jamn
     class Valerie
     {
     private:
-        size_t size;
+        std::size_t size;
         type* vector;
+
+        bool reserved;
+        std::size_t maxSize;
 
     public:
         Valerie();
 
-        size_t retSize() const;
+        bool isFull() const;
+
+        bool isEmpty() const;
+
+        void reserv(std::size_t newMaxSize);
+
+        std::size_t retSize() const;
 
         void pushBack(type value);
 
-        type pushOut(size_t index) const;
+        type pushOut(std::size_t index) const;
 
-        void del(size_t index);
+        type at(std::size_t index) const;
+
+        void remove(std::size_t index);
 
         void sort();
 
-        void replace(size_t index, type value);
+        void replace(std::size_t index, type value);
 
         void clear();
 
@@ -34,7 +45,11 @@ namespace Jamn
 
         Valerie& operator=(Valerie const& v);
 
+        Valerie& operator+(std::initializer_list<type> list);
+
         Valerie& operator=(std::initializer_list<type> list);
+
+        type& operator[](std::size_t index);
 
         ~Valerie();
     };

@@ -1,15 +1,62 @@
 #include <cstddef>
 #include <initializer_list>
+#include <stdexcept>
 
 template <typename type>
     Jamn::Valerie<type>::Valerie()
     {
         size = 0;
         vector = nullptr;
+
+        maxSize = 0;
+        reserved = false;
     }
 
 template <typename type>
-    size_t Jamn::Valerie<type>::retSize() const
+    bool Jamn::Valerie<type>::isFull() const
+    {
+        return reserved && size == maxSize;
+    }
+
+template <typename type>
+    bool Jamn::Valerie<type>::isEmpty() const
+    {
+        return size == 0;
+    }
+
+template <typename type>
+    void Jamn::Valerie<type>::reserv(std::size_t newMaxSize)
+    {
+        reserved = true;
+        type* temp = new type[newMaxSize];
+        for (std::size_t i = 0; i < size; i++)
+        {
+            temp[i] = vector[i];
+        }
+        delete[] vector;
+        maxSize = newMaxSize;
+        vector = new type[maxSize];
+        
+        if(size > maxSize)
+        {
+            for(std::size_t i = 0; i < maxSize; i++)
+            {
+                vector[i] = temp[i];
+            }
+        }
+        else
+        {
+            for(std::size_t i = 0; i < size; i++)
+            {
+                vector[i] = temp[i];
+            }
+        }
+
+        delete[] temp;
+    }
+
+template <typename type>
+    std::size_t Jamn::Valerie<type>::retSize() const
     {
         return size;
     }
@@ -17,28 +64,49 @@ template <typename type>
 template <typename type>
     void Jamn::Valerie<type>::pushBack(type value)
     {
-        if (size == 0)
+        if (size == 0 && reserved && maxSize > 0)
         {
             size++;
             vector = new type[size];
             vector[0] = value;
         }
-        else
+        else if(reserved && size <= maxSize)
         {
             type* temp = new type[size];
-            for (int i = 0; i < size; i++)
+            for (std::size_t i = 0; i < size; i++)
             {
                 temp[i] = vector[i];
             }
             delete[] vector;
             size++;
             vector = new type[size];
-            for (int i = 0; i < size - 1; i++)
+            for (std::size_t i = 0; i < size - 1; i++)
             {
                 vector[i] = temp[i];
             }
             delete[] temp;
             vector[size - 1] = value;
+        }
+        else if(!reserved)
+        {
+            type* temp = new type[size];
+            for (std::size_t i = 0; i < size; i++)
+            {
+                temp[i] = vector[i];
+            }
+            delete[] vector;
+            size++;
+            vector = new type[size];
+            for (std::size_t i = 0; i < size - 1; i++)
+            {
+                vector[i] = temp[i];
+            }
+            delete[] temp;
+            vector[size - 1] = value;
+        }
+        else
+        {
+            throw std::out_of_range("No more space | reserved size is full -> pushBack");
         }
     }
 
@@ -51,19 +119,25 @@ template <typename type>
         }
         else
         {
-            throw std::out_of_range("Wrong index | out of range");
+            throw std::out_of_range("Wrong index | out of range -> pushOut");
         }
     }
 
 template <typename type>
-    void Jamn::Valerie<type>::del(size_t index)
+    type Jamn::Valerie<type>::at(size_t index) const
+    {
+        return pushOut(index % size);
+    }
+
+template <typename type>
+    void Jamn::Valerie<type>::remove(size_t index)
     {
         if (index < size && size > 0)
         {
             size--;
 
             type* temp = new type[size];
-            for (int i = 0; i < size + 1; i++)
+            for (std::size_t i = 0; i < size + 1; i++)
             {
                 if (i < index)
                 {
@@ -77,7 +151,7 @@ template <typename type>
             }
             delete[] vector;
             vector = new type[size];
-            for (int i = 0; i < size; i++)
+            for (std::size_t i = 0; i < size; i++)
             {
                 vector[i] = temp[i];
             }
@@ -86,17 +160,17 @@ template <typename type>
         }
         else
         {
-            throw std::out_of_range("Wrong index | out of range");
+            throw std::out_of_range("Wrong index | out of range -> remove");
         }
     }
 
 template <typename type>
     void Jamn::Valerie<type>::sort()
     {
-        for (int i = 0; i < size - 2; i++)
+        for (std::size_t i = 0; i < size - 2; i++)
         {
             bool end = false;
-            for (int j = 0; j < size - 2 - i; j++)
+            for (std::size_t j = 0; j < size - 2 - i; j++)
             {
                 if (vector[j] > vector[j + 1])
                 {
@@ -124,7 +198,7 @@ template <typename type>
         }
         else
         {
-            throw std::out_of_range("Wrong index | out of range");
+            throw std::out_of_range("Wrong index | out of range -> replace");
         }
     }
 
@@ -134,29 +208,127 @@ template <typename type>
         delete[] vector;
         size = 0;
         vector = nullptr;
+
+        reserved = false;
+        maxSize = 0;
     }
 
 template <typename type>
     Jamn::Valerie<type>& Jamn::Valerie<type>::operator+(Valerie const& v)
     {
-        type* temp = new type[size + v.size];
-        for (int i = 0; i < size; i++)
+        if(reserved)
         {
-            temp[i] = vector[i];
+            if(size + v.size <= maxSize)
+            {
+                for (std::size_t i = 0; i < v.size; i++)
+                {
+                    vector[size + i] = v.vector[i];
+                }
+                size = size + v.size;
+                return *this;
+            }
+            else
+            {
+                type* temp = new type[size + v.size];
+                for (std::size_t i = 0; i < size; i++)
+                {
+                    temp[i] = vector[i];
+                }
+                delete[] vector;
+                for (std::size_t i = 0; i < v.size; i++)
+                {
+                    temp[size + i] = v.vector[i];
+                }
+                
+                vector = new type[maxSize];
+                for (std::size_t i = 0; i < maxSize; i++)
+                {
+                    vector[i] = temp[i];
+                }
+                delete[] temp;
+                return *this;
+            }
         }
-        delete[] vector;
-        for (int i = 0; i < v.size; i++)
+        else
         {
-            temp[size + i] = v.vector[i];
+            type* temp = new type[size + v.size];
+            for (std::size_t i = 0; i < size; i++)
+            {
+                temp[i] = vector[i];
+            }
+            delete[] vector;
+            for (std::size_t i = 0; i < v.size; i++)
+            {
+                temp[size + i] = v.vector[i];
+            }
+            size = size + v.size;
+            vector = new type[size];
+            for (std::size_t i = 0; i < size; i++)
+            {
+                vector[i] = temp[i];
+            }
+            delete[] temp;
+            return *this;
         }
-        size = size + v.size;
-        vector = new type[size];
-        for (int i = 0; i < size; i++)
+    }
+
+template <typename type>
+    Jamn::Valerie<type>& Jamn::Valerie<type>::operator+(std::initializer_list<type> list)
+    {
+        if(reserved)
         {
-            vector[i] = temp[i];
+            if(size + list.size() <= maxSize)
+            {
+                for (std::size_t i = 0; i < list.size(); i++)
+                {
+                    vector[size + i] = list.begin()[i];
+                }
+                size = size + list.size();
+                return *this;
+            }
+            else
+            {
+                type* temp = new type[size + list.size()];
+                for (std::size_t i = 0; i < size; i++)
+                {
+                    temp[i] = vector[i];
+                }
+                delete[] vector;
+                for (std::size_t i = 0; i < list.size(); i++)
+                {
+                    temp[size + i] = list.begin()[i];
+                }
+                
+                vector = new type[maxSize];
+                for (std::size_t i = 0; i < maxSize; i++)
+                {
+                    vector[i] = temp[i];
+                }
+                delete[] temp;
+                return *this;
+            }
         }
-        delete[] temp;
-        return *this;
+        else
+        {
+            type* temp = new type[size + list.size()];
+            for (std::size_t i = 0; i < size; i++)
+            {
+                temp[i] = vector[i];
+            }
+            delete[] vector;
+            for (std::size_t i = 0; i < list.size(); i++)
+            {
+                temp[size + i] = list.begin()[i];
+            }
+            size = size + list.size();
+            vector = new type[size];
+            for (std::size_t i = 0; i < size; i++)
+            {
+                vector[i] = temp[i];
+            }
+            delete[] temp;
+            return *this;
+        }
     }
 
 template <typename type>
@@ -164,14 +336,16 @@ template <typename type>
     {
         if (size == v.size)
         {
-            for (int i = 0; i < size; i++)
+            for (std::size_t i = 0; i < size; i++)
             {
-                if (vector[i] != v.vector[i])
+                if (vector[i] != v.vector[i] || reserved != v.reserved || maxSize != v.maxSize)
                 {
                     delete[] vector;
                     size = v.size;
+                    reserved = v.reserved;
+                    maxSize = v.maxSize;
                     vector = new type[size];
-                    for (int i = 0; i < size; i++)
+                    for (std::size_t i = 0; i < size; i++)
                     {
                         vector[i] = v.vector[i];
                     }
@@ -189,8 +363,10 @@ template <typename type>
         {
             delete[] vector;
             size = v.size;
+            reserved = v.reserved;
+            maxSize = v.maxSize;
             vector = new type[size];
-            for (int i = 0; i < size; i++)
+            for (std::size_t i = 0; i < size; i++)
             {
                 vector[i] = v.vector[i];
             }
@@ -201,14 +377,41 @@ template <typename type>
 template <typename type>
     Jamn::Valerie<type>& Jamn::Valerie<type>::operator=(std::initializer_list<type> list)
     {
-        delete[] this->vector;
-        this->size = list.size();
-        this->vector = new type[this->size];
-        for (int i = 0; i < list.size(); i++)
+        if(list.size() <= maxSize)
         {
-            this->vector[i] = (type)list.begin()[i];
+            delete[] vector;
+            size = list.size();
+            vector = new type[size];
+            for (std::size_t i = 0; i < list.size(); i++)
+            {
+                vector[i] = (type)list.begin()[i];
+            }
+            return *this;
         }
-        return *this;
+        else
+        {
+            delete[] vector;
+            size = maxSize;
+            vector = new type[size];
+            for (std::size_t i = 0; i < size; i++)
+            {
+                vector[i] = (type)list.begin()[i];
+            }
+            return *this;
+        }
+    }
+
+template <typename type>
+    type& Jamn::Valerie<type>::operator[](std::size_t index)
+    {
+        if (index < size && size > 0)
+        {
+            return vector[index];
+        }
+        else
+        {
+            throw std::out_of_range("Wrong index | out of range -> operator[]");
+        }
     }
 
 template <typename type>

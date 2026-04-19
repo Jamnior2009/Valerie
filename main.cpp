@@ -4,27 +4,38 @@
 
 using namespace std;
 
+// Error during + operator on vectors with reserved size and without reserved size.
+
 int main()
 {
     Jamn::Valerie<double> v;
+
+    // v.reserv(4);
 
     v.pushBack(1.1);
     v.pushBack(3.3);
     v.pushBack(2.2);
     v.pushBack(4.4);
 
+    // v.pushBack(5.5);
+
+    std::cout << v.isFull() << std::endl;
+    std::cout << v.isEmpty() << std::endl;
+
     v.sort();
 
     cout << v.retSize() << endl;
 
-    v.del(1);
+    v.remove(1);
 
     cout << v.retSize() << endl;
 
-    for (int i = 0; i < v.retSize(); i++)
+    for (std::size_t i = 0; i < v.retSize(); i++)
     {
         cout << v.pushOut(i) << endl;
     }
+
+    v = { 5.5, 4.4, 3.3, 2.2, 1.1 };
 
     Jamn::Valerie<double> v2;
 
@@ -33,9 +44,9 @@ int main()
 
     cout << v2.retSize() << endl;
 
-    for (int i = 0; i < v2.retSize(); i++)
+    for (std::size_t i = 0; i < v2.retSize(); i++)
     {
-        cout << v2.pushOut(i) << endl;
+        cout << v2[i] << endl;
     }
     
     // ---------------------------    
@@ -48,7 +59,7 @@ int main()
 
     v2.replace(4, 8.8);
 
-    for (int i = 0; i < v2.retSize(); i++)
+    for (std::size_t i = 0; i < v2.retSize(); i++)
     {
         cout << v2.pushOut(i) << endl;
     }
@@ -59,13 +70,15 @@ int main()
 
     std::cout << v3.retSize() << std::endl;
 
-    for (int i = 0; i < v3.retSize(); i++)
+    for (std::size_t i = 0; i < v3.retSize(); i++)
     {
         std::cout << v3.pushOut(i) << std::endl;
     }
     
     v3.clear();
     std::cout << v3.retSize() << std::endl;
+
+    v2.at(100);
 
     return 0;
 }
