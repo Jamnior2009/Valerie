@@ -225,7 +225,6 @@ template <typename type>
                     vector[size + i] = v.vector[i];
                 }
                 size = size + v.size;
-                return *this;
             }
             else
             {
@@ -240,13 +239,13 @@ template <typename type>
                     temp[size + i] = v.vector[i];
                 }
                 
-                vector = new type[maxSize];
-                for (std::size_t i = 0; i < maxSize; i++)
+                size = maxSize;
+                vector = new type[size];
+                for (std::size_t i = 0; i < size; i++)
                 {
                     vector[i] = temp[i];
                 }
                 delete[] temp;
-                return *this;
             }
         }
         else
@@ -268,8 +267,8 @@ template <typename type>
                 vector[i] = temp[i];
             }
             delete[] temp;
-            return *this;
         }
+        return *this;
     }
 
 template <typename type>
@@ -377,28 +376,40 @@ template <typename type>
 template <typename type>
     Jamn::Valerie<type>& Jamn::Valerie<type>::operator=(std::initializer_list<type> list)
     {
-        if(list.size() <= maxSize)
+        if(reserved)
         {
-            delete[] vector;
-            size = list.size();
-            vector = new type[size];
-            for (std::size_t i = 0; i < list.size(); i++)
+            if(list.size() <= maxSize)
             {
-                vector[i] = (type)list.begin()[i];
+                delete[] vector;
+                size = list.size();
+                vector = new type[size];
+                for (std::size_t i = 0; i < list.size(); i++)
+                {
+                    vector[i] = (type)list.begin()[i];
+                }
             }
-            return *this;
+            else
+            {
+                delete[] vector;
+                size = maxSize;
+                vector = new type[size];
+                for (std::size_t i = 0; i < size; i++)
+                {
+                    vector[i] = (type)list.begin()[i];
+                }
+            }
         }
         else
         {
             delete[] vector;
-            size = maxSize;
+            size = list.size();
             vector = new type[size];
-            for (std::size_t i = 0; i < size; i++)
+            for(std::size_t i = 0; i < size; i++)
             {
                 vector[i] = (type)list.begin()[i];
             }
-            return *this;
         }
+        return *this;
     }
 
 template <typename type>

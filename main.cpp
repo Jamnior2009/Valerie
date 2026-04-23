@@ -10,7 +10,7 @@ int main()
 {
     Jamn::Valerie<double> v;
 
-    // v.reserv(4);
+    v.reserv(6);
 
     v.pushBack(1.1);
     v.pushBack(3.3);
@@ -78,7 +78,7 @@ int main()
     v3.clear();
     std::cout << v3.retSize() << std::endl;
 
-    v2.at(100);
+    std::cout << v2.at(100) << std::endl;
 
     return 0;
 }
